@@ -1,0 +1,38 @@
+#1 update apt 
+# 2 Check if go is installed 
+# 3 Install golang  if not install 
+# 4 install github 
+
+---
+- hosts : iurgence-devops
+  become : true 
+  tasks :
+      - name: Check if go is installed 
+        shell:
+            cmd: go help
+            chdir: /usr/bin/
+        register: go_installed
+        ignore_errors: yes
+      
+      - name: Update apt 
+        apt:
+            update_cache: yes
+
+      - name: Use longsleep repository 
+        apt_repository:
+            repo: ppa:longsleep/golang-backports
+            state: present
+
+      - name: Install golang 
+        apt:
+            name: golang-go
+        when: go_installed.rc != 0
+     
+      - name: Create all the go Directory 
+        file:
+            path: "{{ item }}"
+            state: directory
+            force: no
+        loop:
+            - /home/ubuntu/go/pkg
+            - /home/ubuntu/go/bin

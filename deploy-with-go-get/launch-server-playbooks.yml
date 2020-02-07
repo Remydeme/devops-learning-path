@@ -1,0 +1,30 @@
+---
+- hosts: iurgence-devops
+  tasks:
+      - name: Create golang path space server 
+        file:
+            path: ~/go/src/github.com/Remydeme/
+            state: directory
+            force: yes
+     
+
+      # ISSUE with this command replace it by go get  
+      - name: Copy source of server
+        command: go get "github.com/Remydeme/devops-ansible"
+
+
+      - name: Install dependency for the server
+        command: go get "github.com/gorilla/mux"
+      
+      - name: Copy the service file
+        copy:
+            src: server.service
+            dest: /etc/systemd/system/
+            owner: root
+            force: yes
+
+      - name: Launch  the server as service 
+        service:
+            name: server
+            state: started
+

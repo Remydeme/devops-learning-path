@@ -1,0 +1,29 @@
+---
+- hosts : iurgence-devops
+  become : true
+  tasks :
+
+      - name: Check if go dep already installed 
+        shell:
+            cmd: dep help
+        register: go_dep_installed
+        ignore_errors: yes
+
+      - name : Fetch the install file
+        get_url :
+            url : https://raw.githubusercontent.com/golang/dep/master/install.sh
+            dest : /home/ubuntu
+            mode: '0755'
+            force: true
+        when: go_dep_installed.rc != 0
+      
+      - name : Run the installation script 
+        become: true
+        become_user: root
+        shell: /home/ubuntu/install.sh
+        when: go_dep_installed.rc != 0
+
+
+      - name : Check the installation 
+        shell : dep help
+        ignore_errors: yes

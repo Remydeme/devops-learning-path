@@ -1,0 +1,47 @@
+---
+hosts: lamia
+become: true  # root 
+vars_files:
+    - vars/main.yml
+tasks:
+    - name: install packet manager apt 
+      apt:
+          name: aptitude
+          update_cache: yes 
+          state: latest 
+          force_apt_get: yes
+    
+    - name: Install packages to allow apt to use a repository over HTTPS
+      apt:
+          name: {{ item }}
+          state: latest
+          update_cache: yes
+          loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools' ]
+
+    - name: Add docker GPG key # command equivalent to "curl url" | sudo apt-key add - 
+      apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg   #the url to retrieve the key from 
+          state: present
+
+    - name: Add Docker repositiry 
+      apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu bionic stable
+          state: present
+
+    - name: Update apt and install docker CE 
+      apt:
+          name: docker-ce
+          update-cache: yes 
+          state: latest
+    
+    - name: Install docker module for python 
+      pip:
+          name: docker
+
+    - name: Pull default docker image 
+      docker_image:
+          name: "{{ default_container}}"
+          source: pull
+
+    - 
+
