@@ -1,11 +1,11 @@
 ---
 - hosts : iurgence-devops
-  become : true
+  become : yes
   tasks :
 
       - name: Check if go dep already installed 
-        shell:
-            cmd: dep help
+        stat:
+            path: /home/ubuntu/go/bin/dep
         register: go_dep_installed
         ignore_errors: yes
 
@@ -14,16 +14,23 @@
             url : https://raw.githubusercontent.com/golang/dep/master/install.sh
             dest : /home/ubuntu
             mode: '0755'
-            force: true
-        when: go_dep_installed.rc != 0
+            force: yes
+        become_user: ubuntu
+        when: go_dep_installed.stat.exists!= 0
       
       - name : Run the installation script 
-        become: true
+        become: yes
         become_user: root
         shell: /home/ubuntu/install.sh
-        when: go_dep_installed.rc != 0
+        when: go_dep_installed.stat.exists != 0
 
+      - name: Check if dep is install and set up
+        become: yes
+        become_user: ubuntu
+        shell: dep
+        register: go_dep_set
 
-      - name : Check the installation 
-        shell : dep help
-        ignore_errors: yes
+      - name: 
+        debug:
+            msg: "It seems that dep is not installed {{ go_dep_set }}"
+        when: go_dep_set.rc != 1

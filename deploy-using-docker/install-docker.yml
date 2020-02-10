@@ -1,0 +1,37 @@
+---
+- hosts: iurgence-devops
+  tasks:
+      - name: Check if docker is installed and configured
+        shell: docker run --help
+        register: docker_installed
+        ignore_errors: yes
+
+      - name: Install docker 
+        apt:
+            pkg:
+                - docker.io
+                - python3-docker
+            update_cache: yes 
+        become: yes
+        become_user: root
+        when: docker_installed.rc != 0
+
+      - name: Start docker service 
+        service:
+            name: docker 
+            state: restarted
+        become: yes
+        become_user: root
+        when: docker_installed.rc != 0
+
+      - name: Add user to docker group 
+        user:
+            name: ubuntu
+            shell: /bin/bash
+            groups: docker
+            append: yes
+        become: yes
+        become_user: root
+
+
+

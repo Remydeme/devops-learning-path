@@ -1,0 +1,17 @@
+version: "3"
+services:
+    mongo-db:
+        container_name: 'mongo-db'
+        image: 'mongo'
+        ports:
+            - 27017-27019:27017-27019
+        volumes:
+            - ./mongo-volume:/data/db # this means that we want to persist /data/db
+                                      # Of the container in our directory /mongo-volume
+    server:
+        container_name: 'server'
+        image: falconr/docker-tuto-server:latest
+        ports:
+            - 8000:8000
+        depends_on: 
+            - 'mongo-db' # to start mongo before server because server need the database to be up

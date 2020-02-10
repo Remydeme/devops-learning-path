@@ -36,3 +36,20 @@
         loop:
             - /home/ubuntu/go/pkg
             - /home/ubuntu/go/bin
+        when: go_installed.rc != 0
+      
+      - name: Copy the golang Env script 
+        copy:
+            src: go_env.sh 
+            dest: /home/ubuntu
+            mode: '0755'
+            owner: ubuntu
+        become: yes
+        become_user: ubuntu
+        #when: go_installed.rc != 0
+
+      - name: Run the env script 
+        command: /home/ubuntu/go_env.sh
+        become: yes
+        become_user: ubuntu
+        #when: go_installed.rc != 0

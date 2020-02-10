@@ -1,3 +1,3 @@
-echo "export GOPATH=$HOME/go" >> ~/.profile
-echo "export PATH=$PATH:/usr/bin/go:$GOPATH/bin" >> ~/.profile
+#!/bin/bash
+echo "export PATH=$PATH:/home/ubuntu/go/bin" >> ~/.profile
 source ~/.profile
